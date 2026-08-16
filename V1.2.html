@@ -1,0 +1,2678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RYAN MACDONALD // RM-OS</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+:root {
+    --cyan: #00eaff;
+    --cyan-bright: #a8fbff;
+    --cyan-dark: #007c8c;
+    --orange: #ff7600;
+    --bg: #020609;
+    --panel: rgba(4, 14, 20, .78);
+    --border: rgba(0, 234, 255, .22);
+    --text: #dffcff;
+    --muted: #66858e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Rajdhani, sans-serif;
+    overflow-x: hidden;
+}
+
+/* =========================================================
+   ADVANCED SCANNING BACKGROUND
+========================================================= */
+
+.scanner {
+    position: fixed;
+    inset: 0;
+    z-index: -5;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* fine technical grid */
+
+.scanner-grid {
+    position: absolute;
+    inset: -50%;
+    opacity: .18;
+
+    background-image:
+        linear-gradient(
+            rgba(0,234,255,.07) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(0,234,255,.07) 1px,
+            transparent 1px
+        );
+
+    background-size: 55px 55px;
+
+    transform: perspective(700px) rotateX(60deg);
+
+    animation: gridDrift 25s linear infinite;
+}
+
+@keyframes gridDrift {
+    from {
+        transform:
+            perspective(700px)
+            rotateX(60deg)
+            translateY(0);
+    }
+
+    to {
+        transform:
+            perspective(700px)
+            rotateX(60deg)
+            translateY(55px);
+    }
+}
+
+/* atmospheric glow */
+
+.scanner-glow {
+    position: absolute;
+    inset: -20%;
+
+    background:
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(0,234,255,.075),
+            transparent 24%
+        ),
+        radial-gradient(
+            circle at 20% 70%,
+            rgba(0,130,160,.045),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 80% 20%,
+            rgba(0,234,255,.035),
+            transparent 25%
+        );
+
+    animation: atmosphere 8s ease-in-out infinite alternate;
+}
+
+@keyframes atmosphere {
+    from {
+        transform: scale(1);
+        opacity: .7;
+    }
+
+    to {
+        transform: scale(1.08);
+        opacity: 1;
+    }
+}
+
+/* horizontal scanning beam */
+
+.scan-beam {
+    position: absolute;
+
+    left: -10%;
+    width: 120%;
+    height: 180px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            transparent,
+            rgba(0,234,255,.012),
+            rgba(0,234,255,.06),
+            rgba(0,234,255,.018),
+            transparent
+        );
+
+    filter: blur(1px);
+
+    animation: scanBeam 9s linear infinite;
+}
+
+@keyframes scanBeam {
+    0% {
+        top: -200px;
+    }
+
+    100% {
+        top: 110%;
+    }
+}
+
+/* razor thin scanner */
+
+.scan-line {
+    position: absolute;
+
+    left: 0;
+    width: 100%;
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(0,234,255,.15),
+            var(--cyan),
+            rgba(0,234,255,.15),
+            transparent
+        );
+
+    box-shadow:
+        0 0 8px rgba(0,234,255,.6),
+        0 0 25px rgba(0,234,255,.2);
+
+    opacity: .35;
+
+    animation: razorScan 7s linear infinite;
+}
+
+@keyframes razorScan {
+    0% {
+        top: -5%;
+    }
+
+    100% {
+        top: 105%;
+    }
+}
+
+/* vertical scanner */
+
+.vertical-scan {
+    position: absolute;
+
+    top: 0;
+    height: 100%;
+    width: 100px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(0,234,255,.025),
+            rgba(0,234,255,.08),
+            rgba(0,234,255,.025),
+            transparent
+        );
+
+    filter: blur(2px);
+
+    animation: verticalScan 13s ease-in-out infinite;
+}
+
+@keyframes verticalScan {
+    0% {
+        left: -150px;
+    }
+
+    50% {
+        left: calc(100% - 50px);
+    }
+
+    100% {
+        left: -150px;
+    }
+}
+
+/* tiny scanning particles */
+
+.scan-particles {
+    position: absolute;
+    inset: 0;
+}
+
+.particle {
+    position: absolute;
+
+    width: 2px;
+    height: 2px;
+
+    background: var(--cyan);
+
+    box-shadow:
+        0 0 6px var(--cyan),
+        0 0 12px rgba(0,234,255,.7);
+
+    animation: particlePulse 3s ease-in-out infinite;
+}
+
+@keyframes particlePulse {
+    0%,100% {
+        opacity: .05;
+        transform: scale(.5);
+    }
+
+    50% {
+        opacity: .8;
+        transform: scale(1.5);
+    }
+}
+
+/* =========================================================
+   SCAN CORNERS
+========================================================= */
+
+.scan-corner {
+    position: fixed;
+    width: 75px;
+    height: 75px;
+
+    pointer-events: none;
+
+    z-index: 10;
+}
+
+.scan-corner::before,
+.scan-corner::after {
+    content: "";
+    position: absolute;
+
+    background: var(--cyan);
+
+    box-shadow: 0 0 8px var(--cyan);
+}
+
+.scan-corner::before {
+    width: 100%;
+    height: 1px;
+}
+
+.scan-corner::after {
+    width: 1px;
+    height: 100%;
+}
+
+.corner-tl {
+    top: 90px;
+    left: 25px;
+}
+
+.corner-tr {
+    top: 90px;
+    right: 25px;
+    transform: rotate(90deg);
+}
+
+.corner-bl {
+    bottom: 25px;
+    left: 25px;
+    transform: rotate(270deg);
+}
+
+.corner-br {
+    bottom: 25px;
+    right: 25px;
+    transform: rotate(180deg);
+}
+
+/* =========================================================
+   SCANLINES
+========================================================= */
+
+.scanlines {
+    position: fixed;
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 9999;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0,
+            transparent 4px,
+            rgba(255,255,255,.009) 5px
+        );
+}
+
+/* =========================================================
+   BOOT SCREEN
+========================================================= */
+
+#boot {
+    position: fixed;
+    inset: 0;
+
+    z-index: 100000;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0,234,255,.05),
+            #010304 55%
+        );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        opacity 1s ease,
+        visibility 1s ease;
+}
+
+.boot-container {
+    width: 600px;
+    max-width: 90%;
+}
+
+.boot-logo {
+    font-family: Orbitron;
+    font-size: clamp(35px, 7vw, 75px);
+
+    letter-spacing: 9px;
+
+    color: var(--cyan);
+
+    text-shadow:
+        0 0 10px var(--cyan),
+        0 0 30px rgba(0,234,255,.5),
+        0 0 80px rgba(0,234,255,.15);
+
+    margin-bottom: 35px;
+}
+
+.boot-status {
+    font-family: monospace;
+    color: var(--muted);
+
+    font-size: 11px;
+
+    line-height: 2;
+    min-height: 110px;
+}
+
+.boot-line {
+    opacity: 0;
+
+    animation: bootLine .3s forwards;
+}
+
+@keyframes bootLine {
+    to {
+        opacity: 1;
+    }
+}
+
+.boot-progress {
+    height: 3px;
+
+    background: #102128;
+
+    margin-top: 20px;
+}
+
+.boot-progress div {
+    height: 100%;
+    width: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--cyan-dark),
+            var(--cyan-bright)
+        );
+
+    box-shadow:
+        0 0 10px var(--cyan),
+        0 0 35px rgba(0,234,255,.5);
+
+    animation: bootProgress 2.7s forwards;
+}
+
+@keyframes bootProgress {
+    to {
+        width: 100%;
+    }
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+nav {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 72px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 5%;
+
+    background: rgba(2,6,9,.72);
+
+    backdrop-filter: blur(18px);
+
+    border-bottom:
+        1px solid rgba(0,234,255,.16);
+
+    z-index: 5000;
+}
+
+.logo {
+    font-family: Orbitron;
+
+    font-weight: 800;
+
+    letter-spacing: 4px;
+
+    color: var(--cyan);
+
+    text-shadow:
+        0 0 10px rgba(0,234,255,.4);
+}
+
+.logo span {
+    color: var(--orange);
+}
+
+nav ul {
+    display: flex;
+
+    gap: 28px;
+
+    list-style: none;
+}
+
+nav a {
+    color: var(--muted);
+
+    text-decoration: none;
+
+    font-family: Orbitron;
+
+    font-size: 9px;
+
+    letter-spacing: 2px;
+
+    transition: .3s;
+}
+
+nav a:hover {
+    color: var(--cyan);
+
+    text-shadow:
+        0 0 12px var(--cyan);
+}
+
+/* =========================================================
+   SYSTEM MONITOR
+========================================================= */
+
+.system-display {
+    position: fixed;
+
+    left: 20px;
+    bottom: 20px;
+
+    width: 165px;
+
+    border-left:
+        1px solid var(--cyan);
+
+    padding-left: 12px;
+
+    font-family: monospace;
+
+    font-size: 9px;
+
+    color: #45656e;
+
+    z-index: 100;
+}
+
+.system-active {
+    color: var(--cyan);
+}
+
+.system-bar {
+    height: 2px;
+
+    background: #11242b;
+
+    margin: 5px 0 10px;
+}
+
+.system-bar div {
+    height: 100%;
+
+    background: var(--cyan);
+
+    box-shadow:
+        0 0 8px var(--cyan);
+
+    transition: width .5s ease;
+}
+
+/* =========================================================
+   GENERAL
+========================================================= */
+
+section {
+    min-height: 100vh;
+
+    padding: 130px 8%;
+
+    position: relative;
+}
+
+.section-code {
+    font-family: monospace;
+
+    color: var(--cyan);
+
+    font-size: 10px;
+
+    letter-spacing: 4px;
+
+    margin-bottom: 15px;
+}
+
+.section-title {
+    font-family: Orbitron;
+
+    font-size: clamp(30px,5vw,60px);
+
+    margin-bottom: 55px;
+}
+
+.section-title span {
+    color: var(--cyan);
+
+    text-shadow:
+        0 0 18px rgba(0,234,255,.25);
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
+#home {
+    display: flex;
+    align-items: center;
+
+    overflow: hidden;
+}
+
+.hero {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: 1.2fr .8fr;
+
+    gap: 80px;
+
+    align-items: center;
+}
+
+.status {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    border:
+        1px solid rgba(0,234,255,.25);
+
+    padding: 9px 14px;
+
+    font-family: monospace;
+
+    font-size: 10px;
+
+    color: var(--cyan);
+
+    margin-bottom: 30px;
+
+    background: rgba(0,234,255,.015);
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--cyan);
+
+    box-shadow:
+        0 0 8px var(--cyan),
+        0 0 20px var(--cyan);
+
+    animation: pulse 1.3s infinite;
+}
+
+@keyframes pulse {
+    50% {
+        opacity: .2;
+    }
+}
+
+.hero h1 {
+    font-family: Orbitron;
+
+    font-size: clamp(45px,8vw,105px);
+
+    line-height: .88;
+
+    letter-spacing: -4px;
+
+    margin-bottom: 30px;
+}
+
+.hero h1 span {
+    color: var(--cyan);
+
+    text-shadow:
+        0 0 20px rgba(0,234,255,.45),
+        0 0 60px rgba(0,234,255,.1);
+}
+
+.hero-description {
+    max-width: 650px;
+
+    font-family: monospace;
+
+    color: var(--muted);
+
+    line-height: 1.9;
+
+    font-size: 13px;
+
+    margin-bottom: 35px;
+}
+
+.buttons {
+    display: flex;
+
+    gap: 15px;
+
+    flex-wrap: wrap;
+}
+
+.button {
+    padding: 14px 23px;
+
+    border:
+        1px solid var(--cyan);
+
+    color: var(--cyan);
+
+    text-decoration: none;
+
+    font-family: Orbitron;
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    transition: .3s;
+
+    background: rgba(0,234,255,.025);
+}
+
+.button::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -100%;
+
+    width: 100%;
+    height: 100%;
+
+    background: var(--cyan);
+
+    transition: .3s;
+
+    z-index: -1;
+}
+
+.button:hover {
+    color: #001014;
+
+    box-shadow:
+        0 0 25px rgba(0,234,255,.4);
+}
+
+.button:hover::before {
+    left: 0;
+}
+
+/* =========================================================
+   REACTOR
+========================================================= */
+
+.reactor-container {
+    height: 440px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+.reactor {
+    width: 340px;
+    height: 340px;
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    transition: transform .15s ease-out;
+}
+
+.reactor-ring {
+    position: absolute;
+
+    border-radius: 50%;
+
+    border: 1px solid var(--cyan);
+
+    box-shadow:
+        0 0 20px rgba(0,234,255,.12);
+}
+
+.r1 {
+    width: 340px;
+    height: 340px;
+
+    border-color:
+        rgba(0,234,255,.18);
+
+    animation:
+        rotate 24s linear infinite;
+}
+
+.r2 {
+    width: 280px;
+    height: 280px;
+
+    border-style: dashed;
+
+    animation:
+        rotateReverse 16s linear infinite;
+}
+
+.r3 {
+    width: 215px;
+    height: 215px;
+
+    animation:
+        rotate 9s linear infinite;
+}
+
+@keyframes rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes rotateReverse {
+    to {
+        transform: rotate(-360deg);
+    }
+}
+
+.reactor-core {
+    width: 100px;
+    height: 100px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            white 0%,
+            var(--cyan-bright) 12%,
+            var(--cyan) 25%,
+            #007d8e 50%,
+            transparent 72%
+        );
+
+    box-shadow:
+        0 0 15px white,
+        0 0 45px var(--cyan),
+        0 0 100px rgba(0,234,255,.65);
+
+    animation:
+        corePulse 2s infinite;
+}
+
+@keyframes corePulse {
+    50% {
+        transform: scale(.82);
+
+        box-shadow:
+            0 0 10px white,
+            0 0 30px var(--cyan),
+            0 0 70px rgba(0,234,255,.5);
+    }
+}
+
+.orbit {
+    position: absolute;
+
+    width: 100%;
+    height: 100%;
+
+    border-radius: 50%;
+}
+
+.orbit::after {
+    content: "";
+
+    position: absolute;
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--orange);
+
+    box-shadow:
+        0 0 10px var(--orange),
+        0 0 25px var(--orange);
+
+    top: 0;
+    left: 50%;
+}
+
+.orbit1 {
+    transform: rotate(35deg);
+}
+
+.orbit2 {
+    transform: rotate(145deg);
+}
+
+/* =========================================================
+   HUD
+========================================================= */
+
+.hud-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap: 20px;
+}
+
+.hud {
+    position: relative;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(0,234,255,.035),
+            transparent 50%
+        ),
+        var(--panel);
+
+    border:
+        1px solid var(--border);
+
+    padding: 28px;
+
+    backdrop-filter: blur(10px);
+
+    transition: .4s;
+}
+
+.hud:hover {
+    transform: translateY(-6px);
+
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 10px 45px rgba(0,234,255,.09);
+}
+
+.hud::before,
+.hud::after {
+    content: "";
+
+    position: absolute;
+
+    width: 25px;
+    height: 25px;
+
+    border:
+        1px solid var(--cyan);
+}
+
+.hud::before {
+    top: -1px;
+    left: -1px;
+
+    border-right: 0;
+    border-bottom: 0;
+}
+
+.hud::after {
+    bottom: -1px;
+    right: -1px;
+
+    border-left: 0;
+    border-top: 0;
+}
+
+.hud-label {
+    color: var(--muted);
+
+    font-family: monospace;
+
+    font-size: 9px;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 15px;
+}
+
+.hud-value {
+    font-family: Orbitron;
+
+    font-size: 24px;
+
+    color: var(--cyan);
+}
+
+/* =========================================================
+   ABOUT
+========================================================= */
+
+.about-layout {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 25px;
+}
+
+.terminal {
+    min-height: 350px;
+
+    background:
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(0,234,255,.025),
+            transparent 50%
+        ),
+        rgba(0,0,0,.4);
+
+    border:
+        1px solid var(--border);
+
+    padding: 25px;
+
+    font-family: monospace;
+
+    color: #65848d;
+
+    line-height: 2;
+}
+
+.terminal .cyan {
+    color: var(--cyan);
+}
+
+.terminal .orange {
+    color: var(--orange);
+}
+
+.terminal .white {
+    color: white;
+}
+
+.about-text {
+    background: var(--panel);
+
+    border:
+        1px solid var(--border);
+
+    padding: 30px;
+
+    line-height: 1.9;
+
+    color: var(--muted);
+
+    font-size: 15px;
+}
+
+/* =========================================================
+   SKILLS
+========================================================= */
+
+.skills {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 30px;
+}
+
+.skill-panel {
+    background: var(--panel);
+
+    border:
+        1px solid var(--border);
+
+    padding: 30px;
+}
+
+.skill {
+    margin-bottom: 25px;
+}
+
+.skill-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    font-family: monospace;
+
+    font-size: 11px;
+
+    margin-bottom: 8px;
+}
+
+.skill-header span:last-child {
+    color: var(--cyan);
+}
+
+.skill-track {
+    height: 4px;
+
+    background: #102128;
+
+    overflow: hidden;
+}
+
+.skill-fill {
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--cyan-dark),
+            var(--cyan-bright)
+        );
+
+    box-shadow:
+        0 0 10px var(--cyan);
+
+    animation:
+        skillPulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes skillPulse {
+    from {
+        box-shadow:
+            0 0 4px var(--cyan);
+    }
+
+    to {
+        box-shadow:
+            0 0 14px var(--cyan);
+    }
+}
+
+/* =========================================================
+   PROJECTS
+========================================================= */
+
+.projects {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap: 25px;
+}
+
+.project {
+    min-height: 390px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(0,234,255,.05),
+            transparent 50%
+        ),
+        var(--panel);
+
+    border:
+        1px solid var(--border);
+
+    padding: 28px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    transition: .4s;
+}
+
+.project:hover {
+    transform: translateY(-10px);
+
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 15px 60px rgba(0,234,255,.1);
+}
+
+.project-number {
+    font-family: monospace;
+
+    color: var(--orange);
+
+    font-size: 10px;
+}
+
+.project-icon {
+    width: 65px;
+    height: 65px;
+
+    border:
+        1px solid var(--cyan);
+
+    margin: 35px 0 25px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-family: Orbitron;
+
+    color: var(--cyan);
+
+    box-shadow:
+        inset 0 0 25px rgba(0,234,255,.05);
+}
+
+.project h3 {
+    font-family: Orbitron;
+
+    margin-bottom: 15px;
+}
+
+.project p {
+    color: var(--muted);
+
+    line-height: 1.7;
+
+    font-size: 14px;
+}
+
+.tags {
+    position: absolute;
+
+    bottom: 25px;
+
+    display: flex;
+
+    gap: 8px;
+}
+
+.tag {
+    font-family: monospace;
+
+    font-size: 9px;
+
+    padding: 5px 8px;
+
+    border:
+        1px solid rgba(0,234,255,.2);
+
+    color: var(--cyan);
+}
+
+/* =========================================================
+   TIMELINE
+========================================================= */
+
+.timeline {
+    max-width: 900px;
+
+    position: relative;
+}
+
+.timeline::before {
+    content: "";
+
+    position: absolute;
+
+    left: 8px;
+
+    top: 0;
+    bottom: 0;
+
+    width: 1px;
+
+    background:
+        linear-gradient(
+            var(--cyan),
+            transparent
+        );
+}
+
+.timeline-item {
+    position: relative;
+
+    padding-left: 50px;
+
+    margin-bottom: 60px;
+}
+
+.timeline-dot {
+    position: absolute;
+
+    left: 3px;
+    top: 4px;
+
+    width: 11px;
+    height: 11px;
+
+    background: var(--cyan);
+
+    box-shadow:
+        0 0 10px var(--cyan),
+        0 0 25px var(--cyan);
+}
+
+.timeline-date {
+    font-family: monospace;
+
+    color: var(--orange);
+
+    font-size: 10px;
+
+    margin-bottom: 10px;
+}
+
+.timeline h3 {
+    font-family: Orbitron;
+
+    margin-bottom: 12px;
+}
+
+.timeline p {
+    color: var(--muted);
+
+    line-height: 1.8;
+}
+
+/* =========================================================
+   CONTACT
+========================================================= */
+
+.contact-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap: 20px;
+
+    max-width: 1000px;
+}
+
+.contact-card {
+    min-height: 210px;
+
+    position: relative;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(0,234,255,.035),
+            transparent 60%
+        ),
+        var(--panel);
+
+    border:
+        1px solid var(--border);
+
+    padding: 28px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    text-decoration: none;
+
+    transition: .4s;
+
+    overflow: hidden;
+}
+
+.contact-card:hover {
+    transform:
+        translateY(-8px)
+        scale(1.015);
+
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 15px 50px rgba(0,234,255,.1);
+}
+
+.contact-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -100%;
+
+    width: 100%;
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--cyan),
+            transparent
+        );
+
+    animation:
+        cardScan 4s linear infinite;
+}
+
+@keyframes cardScan {
+    to {
+        left: 100%;
+    }
+}
+
+.contact-number {
+    font-family: monospace;
+
+    font-size: 9px;
+
+    color: var(--orange);
+
+    letter-spacing: 2px;
+}
+
+.contact-icon {
+    font-family: Orbitron;
+
+    color: var(--cyan);
+
+    font-size: 25px;
+
+    text-shadow:
+        0 0 15px rgba(0,234,255,.4);
+}
+
+.contact-title {
+    font-family: Orbitron;
+
+    color: var(--text);
+
+    font-size: 14px;
+
+    margin-top: 15px;
+}
+
+.contact-info {
+    font-family: monospace;
+
+    color: var(--cyan);
+
+    font-size: 10px;
+
+    word-break: break-word;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+    padding: 30px 8%;
+
+    border-top:
+        1px solid rgba(0,234,255,.15);
+
+    display: flex;
+
+    justify-content: space-between;
+
+    color: #3d5b64;
+
+    font-family: monospace;
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:950px) {
+
+    nav ul {
+        display: none;
+    }
+
+    .hero {
+        grid-template-columns: 1fr;
+
+        text-align: center;
+    }
+
+    .hero-description {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .buttons {
+        justify-content: center;
+    }
+
+    .reactor-container {
+        height: 330px;
+    }
+
+    .reactor {
+        transform: scale(.75);
+    }
+
+    .hud-grid,
+    .about-layout,
+    .skills,
+    .projects,
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .system-display {
+        display: none;
+    }
+}
+
+@media(max-width:500px) {
+
+    section {
+        padding-left: 6%;
+        padding-right: 6%;
+    }
+
+    .hero h1 {
+        font-size: 45px;
+    }
+
+    .reactor {
+        transform: scale(.62);
+    }
+
+    .contact-card {
+        min-height: 180px;
+    }
+
+    footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     BACKGROUND SCANNER
+===================================================== -->
+
+<div class="scanner">
+
+    <div class="scanner-grid"></div>
+
+    <div class="scanner-glow"></div>
+
+    <div class="scan-beam"></div>
+
+    <div class="scan-line"></div>
+
+    <div class="vertical-scan"></div>
+
+    <div class="scan-particles">
+
+        <div class="particle" style="left:12%;top:20%;animation-delay:.2s"></div>
+        <div class="particle" style="left:24%;top:72%;animation-delay:1.1s"></div>
+        <div class="particle" style="left:37%;top:41%;animation-delay:2s"></div>
+        <div class="particle" style="left:51%;top:17%;animation-delay:.7s"></div>
+        <div class="particle" style="left:64%;top:80%;animation-delay:1.7s"></div>
+        <div class="particle" style="left:73%;top:32%;animation-delay:2.4s"></div>
+        <div class="particle" style="left:88%;top:65%;animation-delay:.9s"></div>
+        <div class="particle" style="left:93%;top:15%;animation-delay:1.8s"></div>
+
+    </div>
+
+</div>
+
+<div class="scanlines"></div>
+
+<div class="scan-corner corner-tl"></div>
+<div class="scan-corner corner-tr"></div>
+<div class="scan-corner corner-bl"></div>
+<div class="scan-corner corner-br"></div>
+
+
+<!-- =====================================================
+     BOOT
+===================================================== -->
+
+<div id="boot">
+
+    <div class="boot-container">
+
+        <div class="boot-logo">
+            RM//OS
+        </div>
+
+        <div class="boot-status" id="bootStatus"></div>
+
+        <div class="boot-progress">
+            <div></div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     NAV
+===================================================== -->
+
+<nav>
+
+    <div class="logo">
+        RM<span>//</span>DEV
+    </div>
+
+    <ul>
+
+        <li><a href="#home">HOME</a></li>
+        <li><a href="#about">PROFILE</a></li>
+        <li><a href="#skills">SYSTEMS</a></li>
+        <li><a href="#projects">PROJECTS</a></li>
+        <li><a href="#experience">LOG</a></li>
+        <li><a href="#contact">CONTACT</a></li>
+
+    </ul>
+
+</nav>
+
+
+<!-- =====================================================
+     SYSTEM MONITOR
+===================================================== -->
+
+<div class="system-display">
+
+    SYSTEM MONITOR<br><br>
+
+    CPU
+
+    <div class="system-bar">
+        <div id="cpu"></div>
+    </div>
+
+    MEMORY
+
+    <div class="system-bar">
+        <div id="memory"></div>
+    </div>
+
+    NETWORK
+
+    <div class="system-bar">
+        <div id="network"></div>
+    </div>
+
+    STATUS:
+    <span class="system-active">ONLINE</span>
+
+</div>
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<section id="home">
+
+<div class="hero">
+
+    <div>
+
+        <div class="status">
+
+            <div class="status-dot"></div>
+
+            RM//OS ONLINE
+            // SYSTEM NOMINAL
+
+        </div>
+
+
+        <h1>
+
+            RYAN<br>
+
+            <span>MACDONALD</span>
+
+        </h1>
+
+
+        <p class="hero-description">
+
+            SOFTWARE DEVELOPMENT STUDENT //
+            APPLICATION DEVELOPER //
+            CREATIVE TECHNOLOGIST
+
+            <br><br>
+
+            Building software, websites and digital systems
+            through experimentation, engineering and an
+            unhealthy amount of coffee.
+
+        </p>
+
+
+        <div class="buttons">
+
+            <a class="button" href="#projects">
+                ACCESS PROJECTS
+            </a>
+
+            <a class="button" href="#contact">
+                OPEN CHANNEL
+            </a>
+
+            <a
+                class="button"
+                href="https://github.com/RyanMacDonald845"
+                target="_blank"
+            >
+                GITHUB
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- REACTOR -->
+
+    <div class="reactor-container">
+
+        <div class="reactor">
+
+            <div class="reactor-ring r1"></div>
+            <div class="reactor-ring r2"></div>
+            <div class="reactor-ring r3"></div>
+
+            <div class="orbit orbit1"></div>
+            <div class="orbit orbit2"></div>
+
+            <div class="reactor-core"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     PROFILE
+===================================================== -->
+
+<section id="about">
+
+    <div class="section-code">
+        // SYSTEM_01 :: IDENTITY
+    </div>
+
+    <h2 class="section-title">
+        SYSTEM <span>PROFILE</span>
+    </h2>
+
+
+    <div class="hud-grid">
+
+        <div class="hud">
+
+            <div class="hud-label">
+                DESIGNATION
+            </div>
+
+            <div class="hud-value">
+                DEVELOPER
+            </div>
+
+        </div>
+
+
+        <div class="hud">
+
+            <div class="hud-label">
+                AGE
+            </div>
+
+            <div class="hud-value">
+                18
+            </div>
+
+        </div>
+
+
+        <div class="hud">
+
+            <div class="hud-label">
+                PRIMARY OBJECTIVE
+            </div>
+
+            <div class="hud-value">
+                BUILD
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <br><br>
+
+
+    <div class="about-layout">
+
+        <div class="terminal">
+
+            <span class="cyan">RYAN@RM-OS</span>:~$ whoami
+
+            <br>
+
+            <span class="white">
+                Ryan MacDonald
+            </span>
+
+            <br><br>
+
+            <span class="cyan">RYAN@RM-OS</span>:~$ status
+
+            <br>
+
+            <span class="orange">
+                SOFTWARE DEVELOPMENT STUDENT
+            </span>
+
+            <br><br>
+
+            <span class="cyan">RYAN@RM-OS</span>:~$ interests
+
+            <br>
+
+            <span class="white">
+                C# / .NET / WEB / GAME DEVELOPMENT
+            </span>
+
+            <br>
+
+            <span class="white">
+                MUSIC / TECHNOLOGY / ENGINEERING
+            </span>
+
+            <br><br>
+
+            <span class="cyan">RYAN@RM-OS</span>:~$ coffee
+
+            <br>
+
+            <span class="orange">
+                REQUIRED
+            </span>
+
+            <br><br>
+
+            <span class="cyan">RYAN@RM-OS</span>:~$ _
+            
+        </div>
+
+
+        <div class="about-text">
+
+            I'm an 18-year-old software development student
+            interested in creating things that actually work.
+
+            <br><br>
+
+            My projects range from desktop applications and
+            websites to game development and other technical
+            experiments.
+
+            <br><br>
+
+            I enjoy learning by building — taking an idea,
+            figuring out how the pieces fit together, and
+            turning it into something functional.
+
+            <br><br>
+
+            Outside of programming, I also work on music,
+            technology and web projects with my band, BLISS.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SKILLS
+===================================================== -->
+
+<section id="skills">
+
+    <div class="section-code">
+        // SYSTEM_02 :: CAPABILITIES
+    </div>
+
+    <h2 class="section-title">
+        TECHNICAL <span>SYSTEMS</span>
+    </h2>
+
+
+    <div class="skills">
+
+        <div class="skill-panel">
+
+            <div class="section-code">
+                PROGRAMMING
+            </div>
+
+
+            <div class="skill">
+
+                <div class="skill-header">
+                    <span>C#</span>
+                    <span>90%</span>
+                </div>
+
+                <div class="skill-track">
+                    <div
+                        class="skill-fill"
+                        style="width:90%"
+                    ></div>
+                </div>
+
+            </div>
+
+
+            <div class="skill">
+
+                <div class="skill-header">
+                    <span>JAVASCRIPT</span>
+                    <span>80%</span>
+                </div>
+
+                <div class="skill-track">
+                    <div
+                        class="skill-fill"
+                        style="width:80%"
+                    ></div>
+                </div>
+
+            </div>
+
+
+            <div class="skill">
+
+                <div class="skill-header">
+                    <span>HTML / CSS</span>
+                    <span>90%</span>
+                </div>
+
+                <div class="skill-track">
+                    <div
+                        class="skill-fill"
+                        style="width:90%"
+                    ></div>
+                </div>
+
+            </div>
+
+
+            <div class="skill">
+
+                <div class="skill-header">
+                    <span>C++</span>
+                    <span>60%</span>
+                </div>
+
+                <div class="skill-track">
+                    <div
+                        class="skill-fill"
+                        style="width:60%"
+                    ></div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="skill-panel">
+
+            <div class="section-code">
+                TECHNOLOGY
+            </div>
+
+
+            <div class="skill">
+
+                <div class="skill-header">
+                    <span>.NET</span>
+                    <span>85%</span>
+                </div>
+
+                <div class="skill-track">
+                    <div
+                        class="skill-fill"
+                        style="width:85%"
+                    ></div>
+                </div>
+
+            </div>
+
+
+            <div class="skill">
+
+                <div class="skill-header">
+                    <span>GIT / GITHUB</span>
+                    <span>85%</span>
+                </div>
+
+                <div class="skill-track">
+                    <div
+                        class="skill-fill"
+                        style="width:85%"
+                    ></div>
+                </div>
+
+            </div>
+
+
+            <div class="skill">
+
+                <div class="skill-header">
+                    <span>UNITY</span>
+                    <span>75%</span>
+                </div>
+
+                <div class="skill-track">
+                    <div
+                        class="skill-fill"
+                        style="width:75%"
+                    ></div>
+                </div>
+
+            </div>
+
+
+            <div class="skill">
+
+                <div class="skill-header">
+                    <span>GODOT</span>
+                    <span>70%</span>
+                </div>
+
+                <div class="skill-track">
+                    <div
+                        class="skill-fill"
+                        style="width:70%"
+                    ></div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PROJECTS
+===================================================== -->
+
+<section id="projects">
+
+    <div class="section-code">
+        // SYSTEM_03 :: ARCHIVE
+    </div>
+
+    <h2 class="section-title">
+        PROJECT <span>ARCHIVE</span>
+    </h2>
+
+
+    <div class="projects">
+
+
+        <div class="project">
+
+            <div class="project-number">
+                PROJECT_001
+            </div>
+
+            <div class="project-icon">
+                CT
+            </div>
+
+            <h3>
+                CLICKTRACK SOFTWARE
+            </h3>
+
+            <p>
+                Desktop software designed for musicians
+                to manage and play click tracks during
+                live performances.
+            </p>
+
+            <div class="tags">
+
+                <div class="tag">C#</div>
+                <div class="tag">.NET</div>
+                <div class="tag">NAUDIO</div>
+
+            </div>
+
+        </div>
+
+
+        <div class="project">
+
+            <div class="project-number">
+                PROJECT_002
+            </div>
+
+            <div class="project-icon">
+                BL
+            </div>
+
+            <h3>
+                BLISS WEBSITE
+            </h3>
+
+            <p>
+                Official website for BLISS featuring
+                custom branding, music information
+                and interactive web elements.
+            </p>
+
+            <div class="tags">
+
+                <div class="tag">HTML</div>
+                <div class="tag">CSS</div>
+                <div class="tag">WEB</div>
+
+            </div>
+
+        </div>
+
+
+        <div class="project">
+
+            <div class="project-number">
+                PROJECT_003
+            </div>
+
+            <div class="project-icon">
+                GD
+            </div>
+
+            <h3>
+                GAME DEVELOPMENT
+            </h3>
+
+            <p>
+                Experimental game development involving
+                gameplay systems, UI, 2D environments
+                and programming.
+            </p>
+
+            <div class="tags">
+
+                <div class="tag">C#</div>
+                <div class="tag">UNITY</div>
+                <div class="tag">GODOT</div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     EXPERIENCE
+===================================================== -->
+
+<section id="experience">
+
+    <div class="section-code">
+        // SYSTEM_04 :: DEVELOPMENT_LOG
+    </div>
+
+    <h2 class="section-title">
+        DEVELOPMENT <span>LOG</span>
+    </h2>
+
+
+    <div class="timeline">
+
+
+        <div class="timeline-item">
+
+            <div class="timeline-dot"></div>
+
+            <div class="timeline-date">
+                2026 — PRESENT
+            </div>
+
+            <h3>
+                NBCC // SOFTWARE DEVELOPMENT
+            </h3>
+
+            <p>
+                Studying software development while
+                expanding practical knowledge of programming,
+                application development and software design.
+            </p>
+
+        </div>
+
+
+        <div class="timeline-item">
+
+            <div class="timeline-dot"></div>
+
+            <div class="timeline-date">
+                2024 — PRESENT
+            </div>
+
+            <h3>
+                BLISS // WEB DEVELOPMENT
+            </h3>
+
+            <p>
+                Building and maintaining the official
+                website for BLISS while working on
+                digital branding and online presence.
+            </p>
+
+        </div>
+
+
+        <div class="timeline-item">
+
+            <div class="timeline-dot"></div>
+
+            <div class="timeline-date">
+                ONGOING
+            </div>
+
+            <h3>
+                PERSONAL DEVELOPMENT
+            </h3>
+
+            <p>
+                Continuously developing applications,
+                games and experimental software projects
+                to improve practical development skills.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CONTACT
+===================================================== -->
+
+<section id="contact">
+
+    <div class="section-code">
+        // SYSTEM_05 :: COMMUNICATION
+    </div>
+
+    <h2 class="section-title">
+        OPEN <span>CHANNEL</span>
+    </h2>
+
+
+    <div class="contact-grid">
+
+
+        <!-- EMAIL -->
+
+        <a
+            class="contact-card"
+            href="mailto:Ryan845637@gmail.com"
+        >
+
+            <div>
+
+                <div class="contact-number">
+                    CHANNEL_01
+                </div>
+
+                <div class="contact-icon">
+                    @
+                </div>
+
+                <div class="contact-title">
+                    EMAIL
+                </div>
+
+            </div>
+
+            <div class="contact-info">
+                Ryan845637@gmail.com
+            </div>
+
+        </a>
+
+
+        <!-- GITHUB -->
+
+        <a
+            class="contact-card"
+            href="https://github.com/RyanMacDonald845"
+            target="_blank"
+        >
+
+            <div>
+
+                <div class="contact-number">
+                    CHANNEL_02
+                </div>
+
+                <div class="contact-icon">
+                    &lt;/&gt;
+                </div>
+
+                <div class="contact-title">
+                    GITHUB
+                </div>
+
+            </div>
+
+            <div class="contact-info">
+                RyanMacDonald845
+            </div>
+
+        </a>
+
+
+        <!-- BLISS -->
+
+        <a
+            class="contact-card"
+            href="https://blissofficial.ca"
+            target="_blank"
+        >
+
+            <div>
+
+                <div class="contact-number">
+                    CHANNEL_03
+                </div>
+
+                <div class="contact-icon">
+                    ♪
+                </div>
+
+                <div class="contact-title">
+                    BLISS
+                </div>
+
+            </div>
+
+            <div class="contact-info">
+                BLISSOFFICIAL.CA
+            </div>
+
+        </a>
+
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+    <div>
+        RM//OS :: PORTFOLIO
+    </div>
+
+    <div>
+        SYSTEM STATUS: ONLINE
+    </div>
+
+    <div>
+        © 2026 RYAN MACDONALD
+    </div>
+
+</footer>
+
+
+<script>
+
+/* =========================================================
+   BOOT SEQUENCE
+========================================================= */
+
+const boot = document.getElementById("boot");
+const bootStatus = document.getElementById("bootStatus");
+
+const bootMessages = [
+
+    "INITIALIZING RM//OS...",
+    "LOADING CORE MODULES...",
+    "INITIALIZING USER PROFILE...",
+    "LOADING DEVELOPMENT DATABASE...",
+    "CONNECTING TO NETWORK...",
+    "LOADING PROJECT ARCHIVE...",
+    "CALIBRATING SCANNING SYSTEM...",
+    "INITIALIZING HOLOGRAPHIC INTERFACE...",
+    "NEURAL INTERFACE ONLINE...",
+    "ALL SYSTEMS NOMINAL."
+
+];
+
+bootMessages.forEach((message, index) => {
+
+    setTimeout(() => {
+
+        const line =
+            document.createElement("div");
+
+        line.className =
+            "boot-line";
+
+        line.textContent =
+            `[${String(index + 1).padStart(2,"0")}] ${message}`;
+
+        bootStatus.appendChild(line);
+
+    }, index * 240);
+
+});
+
+
+setTimeout(() => {
+
+    boot.style.opacity = "0";
+    boot.style.visibility = "hidden";
+
+}, 3100);
+
+
+/* =========================================================
+   REACTOR MOUSE PARALLAX
+========================================================= */
+
+const reactor =
+    document.querySelector(".reactor");
+
+document.addEventListener("mousemove", event => {
+
+    const x =
+        (event.clientX / window.innerWidth - .5) * 18;
+
+    const y =
+        (event.clientY / window.innerHeight - .5) * 18;
+
+    reactor.style.transform =
+        `translate(${x}px, ${y}px)`;
+
+});
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+const sections =
+    document.querySelectorAll("section");
+
+const links =
+    document.querySelectorAll("nav a");
+
+window.addEventListener("scroll", () => {
+
+    let current = "";
+
+    sections.forEach(section => {
+
+        if (
+            window.scrollY >=
+            section.offsetTop - 250
+        ) {
+
+            current =
+                section.id;
+
+        }
+
+    });
+
+    links.forEach(link => {
+
+        link.style.color = "";
+        link.style.textShadow = "";
+
+        if (
+            link.getAttribute("href") ===
+            "#" + current
+        ) {
+
+            link.style.color =
+                "#00eaff";
+
+            link.style.textShadow =
+                "0 0 10px #00eaff";
+
+        }
+
+    });
+
+});
+
+
+/* =========================================================
+   LIVE SYSTEM MONITOR
+========================================================= */
+
+const cpu =
+    document.getElementById("cpu");
+
+const memory =
+    document.getElementById("memory");
+
+const network =
+    document.getElementById("network");
+
+setInterval(() => {
+
+    cpu.style.width =
+        (55 + Math.random() * 35) + "%";
+
+    memory.style.width =
+        (50 + Math.random() * 25) + "%";
+
+    network.style.width =
+        (80 + Math.random() * 18) + "%";
+
+}, 1200);
+
+
+/* =========================================================
+   RANDOM SCAN PARTICLES
+========================================================= */
+
+const particleContainer =
+    document.querySelector(".scan-particles");
+
+for (let i = 0; i < 25; i++) {
+
+    const particle =
+        document.createElement("div");
+
+    particle.className =
+        "particle";
+
+    particle.style.left =
+        Math.random() * 100 + "%";
+
+    particle.style.top =
+        Math.random() * 100 + "%";
+
+    particle.style.animationDelay =
+        Math.random() * 4 + "s";
+
+    particle.style.animationDuration =
+        (2 + Math.random() * 4) + "s";
+
+    particleContainer.appendChild(particle);
+
+}
+
+
+/* =========================================================
+   SMOOTH SCROLL EFFECT
+========================================================= */
+
+const cards =
+    document.querySelectorAll(
+        ".hud, .project, .contact-card"
+    );
+
+const observer =
+    new IntersectionObserver(
+        entries => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+
+                    entry.target.style.opacity =
+                        "1";
+
+                    entry.target.style.transform =
+                        "translateY(0)";
+
+                }
+
+            });
+
+        },
+        {
+            threshold: .15
+        }
+    );
+
+
+cards.forEach(card => {
+
+    card.style.opacity = "0";
+
+    card.style.transform =
+        "translateY(25px)";
+
+    card.style.transition =
+        "opacity .7s ease, transform .7s ease, border-color .4s, box-shadow .4s";
+
+    observer.observe(card);
+
+});
+
+</script>
+
+</body>
+</html>
